@@ -2,16 +2,18 @@ import { modeofoperation } from "@/store/selectors";
 import store from "@/store/store";
 
 export const getModeOfOperation = () => {
-    const state = store.getState();
-    return modeofoperation(state);
-  };
+  const state = store.getState();
+  return modeofoperation(state);
+};
 
+export const checkAnswer = (generatedNumbers, currentRow, userAnswer, handleAnswerCheck, handleNextQuestion, handleNext) => {
+  const modeofoperation = getModeOfOperation();
 
-export const checkAnswer = (generatedNumbers,currentRow,userAnswer,handleAnswerCheck,handleNextQuestion,handleNext) => {
+  if (generatedNumbers[currentRow]) {
     let correctAnswer;
-    const modeofoperation = getModeOfOperation()
+    const number = generatedNumbers[currentRow];
     if (modeofoperation === 'Multiplication' || modeofoperation === 'Division') {
-      const [firstNumber, secondNumber] = generatedNumbers[currentRow].split(/ \* | \/ /).map(Number);
+      const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
       let resultValue;
       if (modeofoperation === 'Multiplication') {
         resultValue = firstNumber * secondNumber;
@@ -19,12 +21,12 @@ export const checkAnswer = (generatedNumbers,currentRow,userAnswer,handleAnswerC
         resultValue = firstNumber / secondNumber;
       }
       correctAnswer = resultValue.toString();
+      handleAnswerCheck(userAnswer === correctAnswer, `${firstNumber} ${modeofoperation === 'Multiplication' ? '*' : '/'} ${secondNumber} = ${correctAnswer}`);
     } else {
       const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
       correctAnswer = additionResult.toString();
+      handleAnswerCheck(userAnswer === correctAnswer, `Result: ${correctAnswer}`);
     }
-
-    handleAnswerCheck(userAnswer === correctAnswer);
 
     if (userAnswer === correctAnswer) {
       setTimeout(() => {
@@ -35,4 +37,7 @@ export const checkAnswer = (generatedNumbers,currentRow,userAnswer,handleAnswerC
         }
       }, 2000);
     }
-  };
+  } else {
+    console.error("Generated number is undefined");
+  }
+};
