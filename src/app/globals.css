@@ -2,32 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.backgroundImageClass {
+  background: url('../../public/background.jpg');
+  min-height:calc(100vh - 30px);
+  background-size: cover;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@keyframes slideInFromLeft {
+   from {
+     transform: translateX(-100%);
+   }
+   to {
+     transform: translateX(0);
+   }
+ }
+
+ .slide_from_left{
+   animation: slideInFromLeft 0.5s forwards;
+ }
+
+ @keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.slide_from_right{
+  animation: slideOutToRight 0.5s forwards;
 }
