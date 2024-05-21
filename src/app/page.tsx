@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import NumberGenerator from "@/components/NumberGenerator";
@@ -14,9 +14,8 @@ export default function Home() {
   const [showResult, setShowResult] = useState(false);
   const [generatedNumbers, setGeneratedNumbers] = useState<string[]>([]);
   const [result, setResult] = useState<number | string | null>(null);
-  const { language } = useAppSelector(
-    (state) => state.mental
-  );
+  const { language } = useAppSelector((state) => state.mental);
+
   const togglePopup = () => {
     setIsPopupOpen(true);
   };
@@ -33,20 +32,34 @@ export default function Home() {
     setResult(null);
     speakText(numbers[0], language);
   };
-  
+
   return (
     <div>
       <Header />
       <div className="backgroundImageClass">
-      {isPopupOpen && (
+        {isPopupOpen && (
           <SidebarNav handleClose={handleClosePopup} isOpen={isPopupOpen} />
-        )}   
-       <NumberGenerator result={result} setResult={setResult} setShowResult={setShowResult} currentRow={currentRow} setCurrentRow={setCurrentRow} generatedNumbers={generatedNumbers}/>
+        )}
+        <NumberGenerator
+          result={result}
+          setResult={setResult}
+          setShowResult={setShowResult}
+          currentRow={currentRow}
+          setCurrentRow={setCurrentRow}
+          generatedNumbers={generatedNumbers}
+        />
         <Footer
-           togglePopup={togglePopup}  generatedNumbers={generatedNumbers} result={result} setResult={setResult} speakOrStop={speakOrStop} showResult={showResult} setShowResult={setShowResult} currentRow={currentRow}
-           setCurrentRow={setCurrentRow}/> 
-          
-           </div>
+          togglePopup={togglePopup}
+          generatedNumbers={generatedNumbers}
+          result={result}
+          setResult={setResult}
+          speakOrStop={speakOrStop}
+          showResult={showResult}
+          setShowResult={setShowResult}
+          currentRow={currentRow}
+          setCurrentRow={setCurrentRow}
+        />
+      </div>
     </div>
   );
 }
