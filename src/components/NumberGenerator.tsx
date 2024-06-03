@@ -2,121 +2,181 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
 import DisplayNumbers from "./DisplayNumbers";
-import { checkAnswer } from "./PlayAndStopFunctions";
 
-const NumberGenerator = ({ result, setResult, setShowResult, currentRow, setCurrentRow, generatedNumbers }) => {
-  const { modeofoperation, isHandsFree, language } = useAppSelector((state) => state.mental);
-
-  const [userAnswer, setUserAnswer] = useState<string>("");
+const NumberGenerator = ({
+  result,
+  setResult,
+  setShowResult,
+  currentRow,
+  setCurrentRow,
+  generatedNumbers,
+  isPlaying,
+}) => {
+  const { modeofoperation, isHandsFree, language, mode } = useAppSelector(
+    (state) => state.mental
+  );
+  const [userAnswers, setUserAnswers] = useState(["", "", ""]);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
-
-  const handleAnswerCheck = (value, correctAnswer) => {
-    setIsAnswerCorrect(value);
-    if (!value) {
-      setResult(correctAnswer);
-    }
-  };
-
-  const handleNextQuestion = () => {
-    if (currentRow < generatedNumbers.length - 1) {
-      setCurrentRow(currentRow + 1);
-      setShowResult(false);
-      setResult(null);
-      if (generatedNumbers[currentRow + 1]) {
-        speakText(generatedNumbers[currentRow + 1], language);
-      }
-    }
-  };
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
-    if (isHandsFree && currentRow >= 0 && currentRow < generatedNumbers.length) {
-      if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
-        setShowResult(true);
-      } else {
-        const timer = setTimeout(() => {
-          if (currentRow < generatedNumbers.length - 1) {
-            setCurrentRow(currentRow + 1);
-            if (generatedNumbers[currentRow + 1]) {
-              speakText(generatedNumbers[currentRow + 1], language);
-            }
-          } else {
-            setShowResult(true);
-          }
-        }, 1000);
-        return () => clearTimeout(timer);
+    const proceedToNext = async () => {
+      if (currentRow === -1) {
+        setCurrentRow(0);
+        await speakNumbers(0);
+      } else if (mode === 1) {
+        if (currentRow < generatedNumbers.length - 1) {
+          await speakText(generatedNumbers[currentRow + 1], language);
+          setCurrentRow(currentRow + 1);
+          setShowResult(false);
+          setResult(null);
+        } else {
+          setShowResult(true);
+        }
+      } else if (mode === 2 || mode === 3) {
+        if (currentRow < generatedNumbers[0].length - 1) {
+          await speakNumbers(currentRow + 1);
+          setCurrentRow(currentRow + 1);
+          setShowResult(false);
+          setResult(null);
+        } else {
+          setShowResult(true);
+        }
       }
-    }
-  }, [isHandsFree, currentRow, generatedNumbers, language, modeofoperation]);
+      setIsSpeaking(false);
+    };
 
-  const handleNext = () => {
-    if (currentRow < generatedNumbers.length - 1) {
-      setCurrentRow(currentRow + 1);
-      if (generatedNumbers[currentRow + 1]) {
-        speakText(generatedNumbers[currentRow + 1], language);
-      }
+    if (isHandsFree && isPlaying && !isSpeaking) {
+      setIsSpeaking(true);
+      proceedToNext();
     }
+  }, [isHandsFree, isPlaying, currentRow, generatedNumbers, language, mode]);
 
-    if (currentRow === generatedNumbers.length - 2 && modeofoperation !== "Multiplication" && modeofoperation !== "Division") {
-      setShowResult(true);
+  const speakNumbers = async (row) => {
+    for (let i = 0; i < mode; i++) {
+      await speakText(generatedNumbers[i][row], language);
     }
   };
 
-  const handleResult = () => {
-    if (generatedNumbers[currentRow]) {
-      const number = generatedNumbers[currentRow];
-      if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
-        const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
-        let resultValue;
-        if (modeofoperation === "Multiplication") {
-          resultValue = firstNumber * secondNumber;
-        } else if (modeofoperation === "Division") {
-          resultValue = firstNumber / secondNumber;
-        }
-        setResult(`${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`);
-        speakText(resultValue.toString(), language);
-
-        return `${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`;
-      } else {
-        const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
-        setResult(`Result: ${additionResult}`);
-        speakText(additionResult.toString(), language);
-        setShowResult(false);
-        return `Result: ${additionResult}`;
+  const handleNext = async () => {
+    setShowResult(false);
+    setResult(null);
+    if (mode === 1) {
+      if (currentRow < generatedNumbers.length - 1) {
+        setCurrentRow(currentRow + 1);
+        await speakText(generatedNumbers[currentRow + 1], language);
       }
+    } else if (mode === 2 || mode === 3) {
+      if (currentRow < generatedNumbers[0].length - 1) {
+        setCurrentRow(currentRow + 1);
+        await speakNumbers(currentRow + 1);
+      }
+    }
+  };
+
+  const handleMultiAdditionCheck = () => {
+    if ((mode === 2 || mode === 3) && modeofoperation === "Addition") {
+      const correctAnswers = generatedNumbers.map(numbers =>
+        numbers.reduce((acc, num) => acc + parseInt(num), 0)
+      );
+
+      const isCorrect = userAnswers.slice(0, mode).every((answer, index) => parseInt(answer) === correctAnswers[index]);
+      setIsAnswerCorrect(isCorrect);
+
+      const resultStrings = correctAnswers.map((correctAnswer, index) =>
+        `Answer ${index + 1}: ${parseInt(userAnswers[index]) === correctAnswer ? "Correct" : "Incorrect"} (${correctAnswer})`
+      );
+
+      setResult(resultStrings);
+      setShowResult(true);
     }
   };
 
   return (
     <div>
-      <div>
-        {!result && generatedNumbers.slice(currentRow, currentRow + 1).map((num, index) => (
-          <div key={index} className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white min-screen">
-            <DisplayNumbers>{num}</DisplayNumbers>
+      {mode === 1 ? (
+        <div>
+          <div>
+            {!result && generatedNumbers.slice(currentRow, currentRow + 1).map((num, index) => (
+              <div
+                key={index}
+                className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white min-screen"
+              >
+                <DisplayNumbers>{num}</DisplayNumbers>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {result && <DisplayNumbers>{result}</DisplayNumbers>}
+          {result && (
+            <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
+              <DisplayNumbers>{result}</DisplayNumbers>
+            </div>
+          )}
 
-      {!isHandsFree && generatedNumbers.length > 0 && (
-        <div className="mt-5 flex justify-center">
-          <input
-            type="text"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            className="p-2 border rounded"
-          />
-          <button
-            onClick={() => {
-              const correctAnswer = handleResult();
-              checkAnswer(generatedNumbers, currentRow, userAnswer, (value, correctAnswer) => handleAnswerCheck(value, correctAnswer), handleNextQuestion, handleNext);
-            }}
-            className="ml-2 p-2 bg-gray-200 rounded"
-          >
-            Check Answer
-          </button>
+          {!isHandsFree && isPlaying && modeofoperation !== "Multiplication" && modeofoperation !== "Division" && (
+            <div className="mt-5 flex justify-center space-x-4">
+              <button onClick={handleNext} className="p-2 bg-gray-200 rounded">
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {generatedNumbers.slice(0, mode).map((numbers, windowIndex) => (
+              <div key={windowIndex}>
+                {numbers.slice(currentRow, currentRow + 1).map((num, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white min-screen"
+                  >
+                    <DisplayNumbers>{num}</DisplayNumbers>
+                  </div>
+                ))}
+                {result && result[windowIndex] && (
+                  <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
+                    <DisplayNumbers>{result[windowIndex]}</DisplayNumbers>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          {!isHandsFree && isPlaying && modeofoperation === "Addition" && (
+            <div className="mt-5 flex justify-center space-x-4">
+              {userAnswers.slice(0, mode).map((answer, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={answer}
+                  onChange={(e) => setUserAnswers(prev => {
+                    const newAnswers = [...prev];
+                    newAnswers[index] = e.target.value;
+                    return newAnswers;
+                  })}
+                  className="p-2 border rounded"
+                  placeholder={`Answer ${index + 1}`}
+                />
+              ))}
+              <button
+                onClick={handleMultiAdditionCheck}
+                className="ml-2 p-2 bg-gray-200 rounded"
+                disabled={userAnswers.slice(0, mode).some(answer => !answer)}
+              >
+                Check Answer
+              </button>
+            </div>
+          )}
+          {!isHandsFree && isPlaying && (
+            <div className="mt-5 flex justify-center space-x-4">
+              <button onClick={handleNext} className="p-2 bg-gray-200 rounded">
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
+
       {isAnswerCorrect !== null && (
         <div className="mt-3 flex justify-center">
           {isAnswerCorrect ? (

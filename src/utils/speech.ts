@@ -6,7 +6,8 @@ export const getModeOfOperation = () => {
   return modeofoperation(state);
 };
 
-export const speakText = (text: string, language: string = "en") => {
+export const speakText = (text: string, language: string = "en"): Promise<void> => {
+  return new Promise((resolve) => {
     const synth = window.speechSynthesis;
     let utterance;
   
@@ -20,9 +21,13 @@ export const speakText = (text: string, language: string = "en") => {
       utterance.lang = "en-US";
     }
   
-    synth.speak(utterance);
-  };
+    utterance.onstart = () => {
+      resolve();
+    };
   
+    synth.speak(utterance);
+  });
+};
 const units = ["", "en", "to", "tre", "fire", "fem", "seks", "sju", "åtte", "ni"];
 const teens = ["ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten"];
 const tens = ["", "", "tjue", "tretti", "førti", "femti", "seksti", "sytti", "åtti", "nitti"];

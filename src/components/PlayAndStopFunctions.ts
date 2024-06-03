@@ -13,15 +13,15 @@ export const checkAnswer = (generatedNumbers, currentRow, userAnswer, handleAnsw
     let correctAnswer;
     const number = generatedNumbers[currentRow];
     if (modeofoperation === 'Multiplication' || modeofoperation === 'Division') {
-      const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
+      const [firstNumber, operator, secondNumber] = number.split(" ");
       let resultValue;
-      if (modeofoperation === 'Multiplication') {
-        resultValue = firstNumber * secondNumber;
-      } else if (modeofoperation === 'Division') {
-        resultValue = firstNumber / secondNumber;
+      if (operator === "*") {
+        resultValue = Number(firstNumber) * Number(secondNumber);
+      } else if (operator === "/") {
+        resultValue = Number(firstNumber) / Number(secondNumber);
       }
       correctAnswer = resultValue.toString();
-      handleAnswerCheck(userAnswer === correctAnswer, `${firstNumber} ${modeofoperation === 'Multiplication' ? '*' : '/'} ${secondNumber} = ${correctAnswer}`);
+      handleAnswerCheck(userAnswer === correctAnswer, `${firstNumber} ${operator} ${secondNumber} = ${correctAnswer}`);
     } else {
       const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
       correctAnswer = additionResult.toString();

@@ -3,12 +3,12 @@ import {
     setIsMultiWindow,
     setLanguage,
     setModeofOperation,
+    setMultiwindow,
     setNumberofdigitsfrom,
     setNumberofdigitsto,
     setNumberofrows,
     setTimeOutMs,
   } from "@/features/MentalSlice";
-  import { setMultiwindow } from "@/features/TemporarySlice";
   import { RootState } from "@/store/store";
   import React, { Fragment, useEffect, useState } from "react";
   import { useDispatch, useSelector } from "react-redux";
@@ -30,9 +30,10 @@ import {
   
     const language = useSelector((state: RootState) => state.mental.language);
     const multiWindow = useSelector(
-      (state: RootState) => state.temporary.multiWindow
+      (state: RootState) => state.mental.mode
     );
-  
+    console.log(multiWindow,"multiWindow");
+
     const numberofrows = useSelector(
       (state: RootState) => state.mental.numberofrows
     );
@@ -68,10 +69,14 @@ import {
       }
     };
   
-    const handleSetIsMultiWindow = (e) => {
-      dispatch(setIsMultiWindow(e.target.checked));
-      if (e.target.checked) {
-        dispatch(setModeofOperation("Addition"));
+    const handleSetIsMultiWindow = async (e) => {
+      
+      await dispatch(setIsMultiWindow(e.target.checked));
+      if(!isMultiWindow){
+      dispatch(setMultiwindow(2))
+      }
+      else{
+        dispatch(setMultiwindow(1))
       }
     };
 
@@ -114,7 +119,7 @@ import {
                 className="w-full p-2 bg-white text-black rounded"
               >
                 <option value="Addition">Addition</option>
-                <option value="Subtractions" disabled={isMultiWindow}>
+                <option value="Subtraction" disabled={isMultiWindow}>
                   Subtractions
                 </option>
                 <option value="Multiplication" disabled={isMultiWindow}>

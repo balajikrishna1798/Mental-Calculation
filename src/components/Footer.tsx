@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
 
@@ -12,46 +12,66 @@ const Footer = ({
   setShowResult,
   currentRow,
   setCurrentRow,
+  setIsPlaying,
+  isPlaying,
 }) => {
-  const { modeofoperation, language } = useAppSelector((state) => state.mental);
+  const { modeofoperation, language, mode } = useAppSelector((state) => state.mental);
 
-  const handleNextQuestion = () => {
-    if (currentRow < generatedNumbers.length - 1) {
-      setCurrentRow(currentRow + 1);
+  useEffect(() => {
+    if (isPlaying) {
       setShowResult(false);
       setResult(null);
-      if (generatedNumbers[currentRow + 1]) {
-        speakText(generatedNumbers[currentRow + 1], language);
-      }
     }
-  };
-
-  
+  }, [isPlaying, setShowResult, setResult]);
 
   const handleResult = () => {
-    if (generatedNumbers[currentRow]) {
-      const number = generatedNumbers[currentRow];
+    if (mode > 1) {
       if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
-        const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
-        let resultValue;
-        if (modeofoperation === "Multiplication") {
-          resultValue = firstNumber * secondNumber;
-        } else if (modeofoperation === "Division") {
-          resultValue = firstNumber / secondNumber;
-        }
-        setResult(`${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`);
-        speakText(resultValue.toString(), language);
+        const results = generatedNumbers.map((windowNumbers) => {
+          return windowNumbers.map((num) => {
+            const [firstNumber, secondNumber] = num.split(/ \* | \/ /).map(Number);
+            let resultValue;
+            if (modeofoperation === "Multiplication") {
+              resultValue = firstNumber * secondNumber;
+            } else if (modeofoperation === "Division") {
+              resultValue = firstNumber / secondNumber;
+            }
+            return `${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`;
+          }).join('\n');
+        });
 
-        setTimeout(() => {
-          if (currentRow < generatedNumbers.length - 1) {
-            handleNextQuestion();
-          }
-        }, 2000);
+        setResult(results);
+        setShowResult(true);
       } else {
-        const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
-        setResult(`Result: ${additionResult}`);
-        speakText(additionResult.toString(), language);
-        setShowResult(false);
+        const results = generatedNumbers.map((windowNumbers) => {
+          const additionResult = windowNumbers.reduce((acc, num) => acc + parseInt(num), 0);
+          return `Result: ${additionResult}`;
+        });
+        setResult(results);
+        setShowResult(true);
+      }
+    } else {
+      if (generatedNumbers[currentRow]) {
+        const number = generatedNumbers[currentRow];
+        if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
+          const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
+          let resultValue;
+          if (modeofoperation === "Multiplication") {
+            resultValue = firstNumber * secondNumber;
+          } else if (modeofoperation === "Division") {
+            resultValue = firstNumber / secondNumber;
+          }
+          const resultString = `${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`;
+          setResult(resultString);
+          speakText(resultValue.toString(), language);
+          setShowResult(true);
+        } else {
+          const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
+          const resultString = `Result: ${additionResult}`;
+          setResult(resultString);
+          speakText(additionResult.toString(), language);
+          setShowResult(true);
+        }
       }
     }
   };
@@ -66,14 +86,14 @@ const Footer = ({
             </svg>
           </button>
           <div>
-            <button onClick={speakOrStop} className="text-white px-10 py-2 rounded-full font-bold">
+            <button onClick={() => { setIsPlaying(true); speakOrStop(); }} className="text-white px-10 py-2 rounded-full font-bold">
               <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 20 20">
                 <path fill="white" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M7 6l8 4-8 4z" />
               </svg>
             </button>
           </div>
           <div>
-            {showResult && !result && (
+            {isPlaying && (
               <button onClick={handleResult} className="text-white px-10 py-2 rounded-full font-bold">
                 <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
                   <path fill="white" d="m9 20.42l-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z" />
