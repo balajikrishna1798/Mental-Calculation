@@ -76,6 +76,14 @@ const Footer = ({
     }
   };
 
+  const isLastRow = () => {
+    if (mode === 1) {
+      return currentRow === generatedNumbers.length - 1;
+    } else {
+      return currentRow === generatedNumbers[0].length - 1;
+    }
+  };
+
   return (
     <footer className="fixed w-full bottom-0 py-5 flex flex-row justify-center items-center shadow-2xl">
       <div className="w-full bottom-0 py-5 flex flex-row justify-center items-center min_footer">
@@ -93,7 +101,7 @@ const Footer = ({
             </button>
           </div>
           <div>
-            {isPlaying && (
+            {isPlaying && isLastRow() && (
               <button onClick={handleResult} className="text-white px-10 py-2 rounded-full font-bold">
                 <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
                   <path fill="white" d="m9 20.42l-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z" />
