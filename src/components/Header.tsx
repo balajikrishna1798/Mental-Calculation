@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import EntriesList from "./EntriesList";
 
-
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -13,6 +12,7 @@ export default function Header() {
   
   return (
     <div id="accordion-collapse" data-accordion="collapse">
+
       <div
         id="accordion-collapse-body-1"
         className={`${

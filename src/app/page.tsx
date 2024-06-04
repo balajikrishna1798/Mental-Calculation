@@ -13,6 +13,8 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState(-1);
   const [showResult, setShowResult] = useState(false);
+  const [isResult, setIsResult] = useState(false);
+
   const [result, setResult] = useState<number | string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const { language, mode } = useAppSelector((state) => state.mental);
@@ -47,10 +49,6 @@ export default function Home() {
     }
   };
 
-  const handleModeChange = (event) => {
-    dispatch(setMode(event.target.value));
-  };
-
   return (
     <div>
       <Header />
@@ -66,6 +64,7 @@ export default function Home() {
           setCurrentRow={setCurrentRow}
           generatedNumbers={useAppSelector((state) => state.mental.mode === 1 ? state.mental.numbers : state.mental.multiNumbers.slice(0, state.mental.mode))}
           isPlaying={isPlaying}
+          isResult={isResult}
         />
         <Footer
           togglePopup={togglePopup}
@@ -79,6 +78,7 @@ export default function Home() {
           setCurrentRow={setCurrentRow}
           setIsPlaying={setIsPlaying}
           isPlaying={isPlaying}
+          setIsResult={setIsResult}
         />
       </div>
     </div>
