@@ -117,6 +117,7 @@ import {
                 value={modeofoperation}
                 onChange={(e) => modeOfOperationChange(e)}
                 className="w-full p-2 bg-white text-black rounded"
+                id="modeofoperation"
               >
                 <option value="Addition">Addition</option>
                 <option value="Subtraction" disabled={isMultiWindow}>
