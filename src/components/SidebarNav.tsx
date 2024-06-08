@@ -258,7 +258,7 @@ import {
                   Number of rows
                 </label>
                 <select
-                  id="numberDigitsTo"
+                  id="numberofrows"
                   value={numberofrows}
                   onChange={(e) =>
                     dispatch(setNumberofrows(parseInt(e.target.value)))
