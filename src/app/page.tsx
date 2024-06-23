@@ -32,6 +32,7 @@ export default function Home() {
     setIsPlaying(true);
     if (mode === 1) {
       const numbers = generateNumbers();
+      
       dispatch(setNumbers(numbers));
       setCurrentRow(0);
       setShowResult(false);

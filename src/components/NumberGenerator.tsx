@@ -14,42 +14,26 @@ const NumberGenerator = ({
   isPlaying,
   isResult,
 }) => {
-  const { modeofoperation, isHandsFree, language, mode } = useAppSelector(
+  const { modeofoperation, isHandsFree, language, mode, numberofrows } = useAppSelector(
     (state) => state.mental
   );
   const [userAnswers, setUserAnswers] = useState(["", "", ""]);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
+
   const isLastRow = () => {
-    if (mode === 1) {
-      return currentRow === generatedNumbers.length - 1;
-    } else {
-      return currentRow === generatedNumbers[0].length - 1;
-    }
+    return currentRow === numberofrows - 1;
   };
+
   useEffect(() => {
     const proceedToNext = async () => {
       if (currentRow === -1) {
         setCurrentRow(0);
         await speakNumbers(0);
-      } else if (mode === 1) {
-        if (currentRow < generatedNumbers.length - 1) {
-          await speakText(generatedNumbers[currentRow + 1], language);
-          setCurrentRow(currentRow + 1);
-          setShowResult(false);
-          setResult(null);
-        } else {
-          setShowResult(true);
-        }
-      } else if (mode === 2 || mode === 3) {
-        if (currentRow < generatedNumbers[0].length - 1) {
-          await speakNumbers(currentRow + 1);
-          setCurrentRow(currentRow + 1);
-          setShowResult(false);
-          setResult(null);
-        } else {
-          setShowResult(true);
-        }
+      } else if (currentRow < numberofrows - 1) {
+        await speakText(generatedNumbers[currentRow + 1], language);
+        setCurrentRow(currentRow + 1);
       }
       setIsSpeaking(false);
     };
@@ -58,7 +42,7 @@ const NumberGenerator = ({
       setIsSpeaking(true);
       proceedToNext();
     }
-  }, [isHandsFree, isPlaying, currentRow, generatedNumbers, language, mode]);
+  }, [isHandsFree, isPlaying, currentRow, generatedNumbers, language, numberofrows]);
 
   const speakNumbers = async (row) => {
     for (let i = 0; i < mode; i++) {
@@ -67,19 +51,14 @@ const NumberGenerator = ({
   };
 
   const handleNext = async () => {
-    setShowResult(false);
-    setResult(null);
-    if (mode === 1) {
-      if (currentRow < generatedNumbers.length - 1) {
+    setIsNextDisabled(true);
+    if (generatedNumbers[currentRow]) {
+      if (currentRow < numberofrows - 1) {
         setCurrentRow(currentRow + 1);
         await speakText(generatedNumbers[currentRow + 1], language);
       }
-    } else if (mode === 2 || mode === 3) {
-      if (currentRow < generatedNumbers[0].length - 1) {
-        setCurrentRow(currentRow + 1);
-        await speakNumbers(currentRow + 1);
-      }
     }
+    setIsNextDisabled(false);
   };
 
   const handleMultiAdditionCheck = () => {
@@ -142,6 +121,7 @@ const NumberGenerator = ({
                   <button
                     onClick={handleNext}
                     className="px-6 py-2 bg-green-800 text-white rounded"
+                    disabled={isNextDisabled}
                   >
                     Next
                   </button>
@@ -162,11 +142,6 @@ const NumberGenerator = ({
                     <DisplayNumbers>{num}</DisplayNumbers>
                   </div>
                 ))}
-                {result && result[windowIndex] && (
-                  <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
-                    <DisplayNumbers>{result[windowIndex]}</DisplayNumbers>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -199,7 +174,7 @@ const NumberGenerator = ({
           )}
           {!isHandsFree && isPlaying && (
             <div className="mt-5 flex justify-center space-x-4">
-              <button onClick={handleNext} className="p-2 bg-red-600 rounded">
+              <button onClick={handleNext} className="p-2 bg-red-600 rounded" disabled={isNextDisabled}>
                 Next
               </button>
             </div>

@@ -10,24 +10,31 @@ export const speakText = (text: string, language: string = "en"): Promise<void> 
   return new Promise((resolve) => {
     const synth = window.speechSynthesis;
     let utterance;
-  
+
     if (language === "nb-NO") {
       const number = parseInt(text);
       const norwegianText = numberToNorwegian(number);
       utterance = new SpeechSynthesisUtterance(norwegianText);
       utterance.lang = "no-NO";
     } else {
-      utterance = new SpeechSynthesisUtterance(text);
+      const textString = text.toString(); // Ensure text is a string
+    const operationText = textString
+      .replace(/\*/g, " multiplied by ")
+      .replace(/\//g, " divided by ")
+      .replace(/-/g, " minus ");
+
+      utterance = new SpeechSynthesisUtterance(operationText);
       utterance.lang = "en-US";
     }
-  
+
     utterance.onstart = () => {
       resolve();
     };
-  
+
     synth.speak(utterance);
   });
 };
+
 const units = ["", "en", "to", "tre", "fire", "fem", "seks", "sju", "åtte", "ni"];
 const teens = ["ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten"];
 const tens = ["", "", "tjue", "tretti", "førti", "femti", "seksti", "sytti", "åtti", "nitti"];

@@ -1,15 +1,15 @@
 import { modeofoperation, numberofdigitsfrom, numberofdigitsto, numberofrows } from "@/store/selectors";
 import store from "@/store/store";
 
-export const generateRandomNumber = (min: number, max: number): number => {
+export const generateRandomNumber = (min, max) => {
   let number;
   do {
     number = Math.floor(Math.random() * (max - min + 1)) + min;
-  } while (number === 0); // Ensure 0 is never generated
+  } while (number === 0); 
   return number;
 };
 
-export const generateNumberWithDigits = (digits: number): number => {
+export const generateNumberWithDigits = (digits) => {
   const min = Math.pow(10, digits - 1);
   const max = Math.pow(10, digits) - 1;
   return generateRandomNumber(min, max);
@@ -44,47 +44,46 @@ export const generateNumbers = () => {
   const numberofrows = getNumberOfRows();
 
   for (let i = 0; i < numberofrows; i++) {
-      let number;
-      if (modeofoperation === 'Multiplication' || modeofoperation === 'Division') {
-          let firstNumber;
-          let secondNumber;
+    let number;
 
-          if (modeofoperation === 'Division') {
-              firstNumber = generateNumberWithDigits(numberofdigitsfrom);
-              let maxSecondNumber = Math.pow(10, numberofdigitsto) - 1;
-              do {
-                  secondNumber = generateRandomNumber(1, maxSecondNumber);
-              } while (firstNumber % secondNumber !== 0);  // Ensure firstNumber is divisible by secondNumber
+    if (modeofoperation === 'Subtraction') {
+      let firstNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
+      let secondNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
 
-              number = `${firstNumber} / ${secondNumber}`;
-          } else {
-              firstNumber = generateNumberWithDigits(numberofdigitsfrom);
-              secondNumber = generateNumberWithDigits(numberofdigitsto);
-              number = `${firstNumber} * ${secondNumber}`;
-          }
-          numbers.push(number);
-      } else {
-          if (modeofoperation === 'Addition') {
-              number = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
-          } else {
-              const min = Math.pow(10, numberofdigitsfrom - 1);
-              const max = Math.pow(10, numberofdigitsto) - 1;
-              if (i === 0) {
-                  number = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
-              } else {
-                  do {
-                      number = generateRandomNumber(-max, max);
-                  } while (number === 0);
-              }
-          }
-          numbers.push(number.toString());
-          sum += number;
+      if (secondNumber > firstNumber) {
+        [firstNumber, secondNumber] = [secondNumber, firstNumber]; // Swap to ensure the result is positive
       }
+      number = `${firstNumber} - ${secondNumber}`;
+    } else if (modeofoperation === 'Multiplication' || modeofoperation === 'Division') {
+      let firstNumber;
+      let secondNumber;
+
+      if (modeofoperation === 'Division') {
+        firstNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
+        do {
+          secondNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
+        } while (firstNumber % secondNumber !== 0);  // Ensure firstNumber is divisible by secondNumber
+        number = `${firstNumber} / ${secondNumber}`;
+      } else {
+        firstNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
+        secondNumber = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto));
+        number = `${firstNumber} * ${secondNumber}`;
+      }
+    } else if (modeofoperation === 'Addition') {
+      number = generateNumberWithDigits(generateRandomNumber(numberofdigitsfrom, numberofdigitsto)).toString();
+    } else {
+      const min = Math.pow(10, numberofdigitsfrom - 1);
+      const max = Math.pow(10, numberofdigitsto) - 1;
+      number = generateRandomNumber(min, max).toString();
+      sum += parseInt(number);
+    }
+
+    numbers.push(number);
   }
 
   if (sum < 0 && modeofoperation !== 'Addition') {
-      const adjustment = Math.abs(sum) + generateRandomNumber(1, 10);
-      numbers[numberofrows - 1] = (parseInt(numbers[numberofrows - 1]) + adjustment).toString();
+    const adjustment = Math.abs(sum) + generateRandomNumber(1, 10);
+    numbers[numberofrows - 1] = (parseInt(numbers[numberofrows - 1]) + adjustment).toString();
   }
 
   return numbers;

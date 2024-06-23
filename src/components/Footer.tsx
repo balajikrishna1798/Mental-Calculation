@@ -26,68 +26,67 @@ const Footer = ({
     }
   }, [isPlaying, setShowResult, setResult]);
 
-  const handleResult = () => {
-    setIsResult(true)
-    if (mode > 1) {
-      if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
-        const results = generatedNumbers.map((windowNumbers) => {
-          return windowNumbers.map((num) => {
-            const [firstNumber, secondNumber] = num.split(/ \* | \/ /).map(Number);
-            let resultValue;
-            if (modeofoperation === "Multiplication") {
-              resultValue = firstNumber * secondNumber;
-            } else if (modeofoperation === "Division") {
-              resultValue = firstNumber / secondNumber;
-            }
-            return `${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`;
-          }).join('\n');
-        });
+  const handleResult = async () => {
+    setIsResult(true);
+    const results = [];
+    const operations = [];
 
-        setResult(results);
-        setShowResult(true);
-      } else {
-        const results = generatedNumbers.map((windowNumbers) => {
-          const additionResult = windowNumbers.reduce((acc, num) => acc + parseInt(num), 0);
-          return `Result: ${additionResult}`;
-        });
-        setResult(results);
-        setShowResult(true);
+    if (modeofoperation === "Subtraction") {
+      for (let i = 0; i < generatedNumbers.length; i++) {
+        const number = generatedNumbers[i];
+        const [firstNumber, secondNumber] = number.split(" - ").map(Number);
+        const resultValue = firstNumber - secondNumber;
+        const resultString = `${firstNumber} - ${secondNumber} = ${resultValue}`;
+
+        results.push(resultString);
+        operations.push(resultString.replace(/-/g, " minus "));
       }
-    } else {
-      if (generatedNumbers[currentRow]) {
-        const number = generatedNumbers[currentRow];
-        if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
-          const [firstNumber, secondNumber] = number.split(/ \* | \/ /).map(Number);
-          let resultValue;
-          if (modeofoperation === "Multiplication") {
-            resultValue = firstNumber * secondNumber;
-          } else if (modeofoperation === "Division") {
-            resultValue = firstNumber / secondNumber;
-          }
-          const resultString = `${firstNumber} ${modeofoperation === "Multiplication" ? "*" : "/"} ${secondNumber} = ${resultValue}`;
-          setResult(resultString);
-          speakText(resultValue.toString(), language);
-          setShowResult(true);
-        } else {
-          const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
-          const resultString = `Result: ${additionResult}`;
-          setResult(resultString);
-          speakText(additionResult.toString(), language);
-          setShowResult(true);
+    } else if (modeofoperation === "Addition") {
+      const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
+      const resultString = `Result: ${additionResult}`;
+      results.push(resultString);
+      operations.push(resultString);
+    } else if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
+      for (let i = 0; i < generatedNumbers.length; i++) {
+        const number = generatedNumbers[i];
+        let resultValue;
+        let resultString;
+        if (modeofoperation === "Multiplication") {
+          const [firstNumber, secondNumber] = number.split(" * ").map(Number);
+          resultValue = firstNumber * secondNumber;
+          resultString = `${firstNumber} * ${secondNumber} = ${resultValue}`;
+        } else if (modeofoperation === "Division") {
+          const [firstNumber, secondNumber] = number.split(" / ").map(Number);
+          resultValue = firstNumber / secondNumber;
+          resultString = `${firstNumber} / ${secondNumber} = ${resultValue}`;
         }
+        results.push(resultString);
+        operations.push(resultString.replace(/\*/g, " multiplied by ").replace(/\//g, " divided by "));
       }
     }
+
+    setResult(results);
+    setShowResult(true);
+
+    // Speak all results at once
+    for (const operation of operations) {
+      await speakText(operation, language);
+    }
+
+    // Wait for 5 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    setShowResult(false);
   };
+
   const isLastRow = () => {
     if (mode === 1) {
-      if(modeofoperation=="Multiplication"){
-        return true
-      }
       return currentRow === generatedNumbers.length - 1;
     } else {
       return currentRow === generatedNumbers[0].length - 1;
     }
   };
+
   return (
     <footer className="fixed w-full bottom-0 py-5 flex flex-row justify-center items-center shadow-2xl">
       <div className="w-full bottom-0 py-5 flex flex-row justify-center items-center min_footer">
@@ -98,7 +97,7 @@ const Footer = ({
             </svg>
           </button>
           <div>
-            <button onClick={() => { setIsPlaying(true); speakOrStop();setIsResult(false) }} className="text-white px-10 py-2 rounded-full font-bold play-button">
+            <button onClick={() => { setIsPlaying(true); speakOrStop(); setIsResult(false) }} className="text-white px-10 py-2 rounded-full font-bold play-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 20 20">
                 <path fill="white" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M7 6l8 4-8 4z" />
               </svg>
