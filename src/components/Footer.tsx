@@ -15,7 +15,7 @@ const Footer = ({
   setCurrentRow,
   setIsPlaying,
   isPlaying,
-  setIsResult
+  setIsResult,
 }) => {
   const { modeofoperation, language, mode } = useAppSelector((state) => state.mental);
 
@@ -74,7 +74,7 @@ const Footer = ({
     }
 
     // Wait for 5 seconds
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     setShowResult(false);
   };
@@ -97,7 +97,14 @@ const Footer = ({
             </svg>
           </button>
           <div>
-            <button onClick={() => { setIsPlaying(true); speakOrStop(); setIsResult(false) }} className="text-white px-10 py-2 rounded-full font-bold play-button">
+            <button
+              onClick={() => {
+                setIsPlaying(true);
+                speakOrStop();
+                setIsResult(false);
+              }}
+              className="text-white px-10 py-2 rounded-full font-bold play-button"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 20 20">
                 <path fill="white" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M7 6l8 4-8 4z" />
               </svg>
