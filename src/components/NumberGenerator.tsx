@@ -106,11 +106,6 @@ const NumberGenerator = ({
                 ))}
           </div>
 
-          {result && (
-            <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
-              <DisplayNumbers>{result}</DisplayNumbers>
-            </div>
-          )}
 
           {!isHandsFree &&
             isPlaying &&
@@ -139,7 +134,7 @@ const NumberGenerator = ({
                     key={index}
                     className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white min-screen"
                   >
-                    <DisplayNumbers>{num}</DisplayNumbers>
+                    <DisplayNumbers>{num}l</DisplayNumbers>
                   </div>
                 ))}
               </div>
@@ -189,6 +184,24 @@ const NumberGenerator = ({
           ) : (
             <span className="text-red-500">Incorrect. Try again.</span>
           )}
+        </div>
+      )}
+
+      {/* Display results in a grid for subtraction */}
+      { modeofoperation === "Subtraction" && result && (
+        <div className="result-grid">
+          {result.map((res, index) => (
+            <div key={index} className="result-item">
+              {res}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Display result for addition */}
+      { modeofoperation === "Addition" && result && (
+        <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
+          <DisplayNumbers>{result}</DisplayNumbers>
         </div>
       )}
     </div>
