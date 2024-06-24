@@ -14,7 +14,7 @@ export default function Home() {
   const [currentRow, setCurrentRow] = useState(-1);
   const [showResult, setShowResult] = useState(false);
   const [isResult, setIsResult] = useState(false);
-
+  const [time, setTime] = useState(0);
   const [result, setResult] = useState<number | string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const { language, mode } = useAppSelector((state) => state.mental);
@@ -32,7 +32,6 @@ export default function Home() {
     setIsPlaying(true);
     if (mode === 1) {
       const numbers = generateNumbers();
-      
       dispatch(setNumbers(numbers));
       setCurrentRow(0);
       setShowResult(false);
@@ -66,6 +65,8 @@ export default function Home() {
           generatedNumbers={useAppSelector((state) => state.mental.mode === 1 ? state.mental.numbers : state.mental.multiNumbers.slice(0, state.mental.mode))}
           isPlaying={isPlaying}
           isResult={isResult}
+          setTime={setTime}
+          time={time}
         />
         <Footer
           togglePopup={togglePopup}
@@ -80,6 +81,7 @@ export default function Home() {
           setIsPlaying={setIsPlaying}
           isPlaying={isPlaying}
           setIsResult={setIsResult}
+          setTime={setTime}
         />
       </div>
     </div>
