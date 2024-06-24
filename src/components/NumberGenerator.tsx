@@ -13,6 +13,8 @@ const NumberGenerator = ({
   generatedNumbers,
   isPlaying,
   isResult,
+  setTime,
+  time
 }) => {
   const { modeofoperation, isHandsFree, language, mode, numberofrows } = useAppSelector(
     (state) => state.mental
@@ -88,7 +90,7 @@ const NumberGenerator = ({
 
   return (
     <div>
-      <Stopwatch isPlaying={isPlaying} isResult={isResult} />
+      <Stopwatch isPlaying={isPlaying} isResult={isResult} setTime={setTime} time={time}/>
 
       {mode === 1 ? (
         <div>
@@ -134,7 +136,7 @@ const NumberGenerator = ({
                     key={index}
                     className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white min-screen"
                   >
-                    <DisplayNumbers>{num}l</DisplayNumbers>
+                    <DisplayNumbers>{num}</DisplayNumbers>
                   </div>
                 ))}
               </div>
@@ -188,7 +190,7 @@ const NumberGenerator = ({
       )}
 
       {/* Display results in a grid for subtraction */}
-      { modeofoperation === "Subtraction" && result && (
+      {["Subtraction", "Multiplication", "Division"].includes(modeofoperation) && result && (
         <div className="result-grid">
           {result.map((res, index) => (
             <div key={index} className="result-item">
@@ -199,7 +201,7 @@ const NumberGenerator = ({
       )}
 
       {/* Display result for addition */}
-      { modeofoperation === "Addition" && result && (
+      {modeofoperation === "Addition" && result && (
         <div className="flex justify-center font-bold text-5xl md:text-8xl lg:text-8xl text-white">
           <DisplayNumbers>{result}</DisplayNumbers>
         </div>
