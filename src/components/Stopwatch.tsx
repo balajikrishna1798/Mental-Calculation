@@ -1,33 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
-const Stopwatch = ({ isPlaying, isResult }) => {
-  const [time, setTime] = useState(0);
-  const [running, setRunning] = useState(false);
+const Stopwatch = ({ isPlaying, isResult,setTime,time }) => {
+  
+  const intervalRef = useRef(null);
 
   useEffect(() => {
-    let interval;
-    if (isPlaying) {
-      setRunning(true);
-    }
-    if (running) {
-      interval = setInterval(() => {
+    if (isPlaying && !isResult) {
+      intervalRef.current = setInterval(() => {
         setTime((prevTime) => prevTime + 1);
       }, 1000);
-    }
-    if (!isPlaying || (isPlaying && isResult)) {
-      setRunning(false);
-      clearInterval(interval);
+    } else {
+      clearInterval(intervalRef.current);
     }
 
-    return () => clearInterval(interval);
-  }, [isPlaying, running, isResult]);
+    return () => clearInterval(intervalRef.current);
+  }, [isPlaying, isResult]);
 
   useEffect(() => {
-    if (!isPlaying) {
+    
       setTime(0);
-    }
-  }, [isPlaying]);
-
+    
+  }, []);
   const formatTime = (seconds) => {
     const getSeconds = `0${seconds % 60}`.slice(-2);
     const minutes = Math.floor(seconds / 60);
