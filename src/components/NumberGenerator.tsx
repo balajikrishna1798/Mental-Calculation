@@ -108,11 +108,8 @@ const NumberGenerator = ({
                 ))}
           </div>
 
-
           {!isHandsFree &&
-            isPlaying &&
-            modeofoperation !== "Multiplication" &&
-            modeofoperation !== "Division" && (
+            isPlaying && (
               <div className="mt-5 flex justify-center space-x-4">
                 {!isLastRow() && (
                   <button
