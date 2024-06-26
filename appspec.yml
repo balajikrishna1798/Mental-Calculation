@@ -11,7 +11,7 @@ hooks:
     - location: scripts/node_install.sh
       timeout: 300
       runas: root
-    - location: scripts/httpd_install.sh
+    - location: scripts/nginx_install.sh
       timeout: 300
       runas: root
   AfterInstall:
@@ -19,9 +19,6 @@ hooks:
       timeout: 300
       runas: root
     - location: scripts/start_next.sh
-      timeout: 300
-      runas: root
-    - location: scripts/httpd_start.sh
       timeout: 300
       runas: root
   ApplicationStop:
