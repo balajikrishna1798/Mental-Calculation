@@ -1,3 +1,4 @@
 #!/bin/bash
 cd /var/www/html
-serve -s out -l 3000 &
+npm install -g pm2
+pm2 start npm --name "next-app" -- start
