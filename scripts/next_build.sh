@@ -2,3 +2,4 @@
 cd /var/www/html
 npm install
 npm run build
+npm install -g serve
