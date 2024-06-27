@@ -1,17 +1,11 @@
 #!/bin/bash
-# Install application dependencies and build the React app
-cd /home/ec2-user/react-app
+# Navigate to the project directory
+cd /home/ec2-user/nextjs-app
 
-# Ensure npm is installed
-if ! command -v npm &> /dev/null; then
-    echo "npm could not be found"
-    exit 1
-fi
-
-# Install dependencies
+# Install project dependencies
 npm install
 
-# Build the React application
+# Build the Next.js application
 npm run build
 
 # Verify the build directory is created
