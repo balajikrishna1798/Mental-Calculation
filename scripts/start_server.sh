@@ -1,5 +1,6 @@
 #!/bin/bash
 # Start the application
+export PATH=$PATH:/usr/local/bin
 cd /home/ec2-user/react-app
-npm install -g serve
-serve -s build -l 80
+sudo npm install -g serve
+sudo serve -s build -l 80
