@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/nextjs-app
+    destination: /home/ec2-user/your-nextjs-app
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
