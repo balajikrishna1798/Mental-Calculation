@@ -3,7 +3,13 @@
 export PATH=$PATH:/usr/local/bin
 
 # Navigate to the project directory
-cd /home/ec2-user/nextjs-app
+cd /home/ec2-user/your-nextjs-app
+
+# Verify the build directory exists
+if [ ! -d ".next" ]; then
+    echo "Build directory not found. Cannot start server."
+    exit 1
+fi
 
 # Install PM2 globally
 sudo npm install -g pm2
