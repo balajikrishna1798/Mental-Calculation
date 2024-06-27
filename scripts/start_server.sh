@@ -2,22 +2,18 @@
 # Add npm global binaries to the PATH
 export PATH=$PATH:/usr/local/bin
 
-# Start the application
-cd /home/ec2-user/react-app
+# Navigate to the project directory
+cd /home/ec2-user/nextjs-app
 
-# Verify the build directory exists
-if [ ! -d "build" ]; then
-    echo "Build directory not found. Cannot start server."
-    exit 1
-fi
+# Install PM2 globally
+sudo npm install -g pm2
 
-# Install serve globally and run it in the background on port 3000
-sudo npm install -g serve
-nohup serve -s build -l 3000 > /home/ec2-user/react-app/serve.log 2>&1 &
+# Start the Next.js application using PM2
+pm2 start npm --name "nextjs-app" -- run start -- -p 3000
 
 # Ensure the app is running
 sleep 5
-if ! pgrep -f "serve -s build -l 3000" > /dev/null; then
-    echo "Serve failed to start"
+if ! pgrep -f "pm2" > /dev/null; then
+    echo "PM2 failed to start the application"
     exit 1
 fi
