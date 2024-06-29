@@ -17,7 +17,12 @@ export default function Home() {
   const [time, setTime] = useState(0);
   const [result, setResult] = useState<number | string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [stopwatchrun, setStopWatchRun] = useState(false);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
+  const [userAnswers, setUserAnswers] = useState(["", "", ""]);
+
   const { language, mode } = useAppSelector((state) => state.mental);
+
   const dispatch = useAppDispatch();
 
   const togglePopup = () => {
@@ -30,19 +35,20 @@ export default function Home() {
 
   const speakOrStop = () => {
     setIsPlaying(true);
+    setShowResult(false);
+    setIsResult(false);
+    setResult(null);
+    setIsAnswerCorrect(null);
+
     if (mode === 1) {
       const numbers = generateNumbers();
       dispatch(setNumbers(numbers));
       setCurrentRow(0);
-      setShowResult(false);
-      setResult(null);
       speakText(numbers[0], language);
     } else if (mode === 2 || mode === 3) {
       const multiNumbers = generateMultipleNumbers(mode);
       dispatch(setNumbers(multiNumbers));
       setCurrentRow(0);
-      setShowResult(false);
-      setResult(null);
       speakText(multiNumbers[0][0], language);
       speakText(multiNumbers[1][0], language);
       if (mode === 3) speakText(multiNumbers[2][0], language);
@@ -67,6 +73,12 @@ export default function Home() {
           isResult={isResult}
           setTime={setTime}
           time={time}
+          setIsAnswerCorrect={setIsAnswerCorrect}
+          isAnswerCorrect={isAnswerCorrect}
+          stopwatchrun={stopwatchrun}
+          setStopWatchRun={setStopWatchRun}
+          userAnswers={userAnswers}
+          setUserAnswers={setUserAnswers}
         />
         <Footer
           togglePopup={togglePopup}
@@ -82,6 +94,8 @@ export default function Home() {
           isPlaying={isPlaying}
           setIsResult={setIsResult}
           setTime={setTime}
+          setStopWatchRun={setStopWatchRun}
+          setUserAnswers={setUserAnswers}
         />
       </div>
     </div>

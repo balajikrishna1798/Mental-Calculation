@@ -16,9 +16,11 @@ const Footer = ({
   setIsPlaying,
   isPlaying,
   setIsResult,
-  setTime
+  setTime,
+  setStopWatchRun,
+  setUserAnswers
 }) => {
-  const { modeofoperation, language, mode } = useAppSelector((state) => state.mental);
+  const { modeofoperation, language, mode,isHandsFree } = useAppSelector((state) => state.mental);
 
   useEffect(() => {
     if (isPlaying) {
@@ -104,8 +106,9 @@ const Footer = ({
               setShowResult(false); 
               setIsResult(false)
               speakOrStop();
-              setTime(0)
-
+              setTime(0),
+              setStopWatchRun(false),
+              setUserAnswers(["", "", ""])
             }} className="text-white px-10 py-2 rounded-full font-bold play-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 20 20">
                 <path fill="white" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M7 6l8 4-8 4z" />
@@ -113,7 +116,7 @@ const Footer = ({
             </button>
           </div>
           <div>
-            {isPlaying && isLastRow() && (
+            {isPlaying && isLastRow() && isHandsFree && (
               <button onClick={handleResult} className="text-white px-10 py-2 rounded-full font-bold result-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
                   <path fill="white" d="m9 20.42l-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z" />

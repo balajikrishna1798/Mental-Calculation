@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Stopwatch = ({ isPlaying, isResult,setTime,time }) => {
+const Stopwatch = ({ isPlaying, isResult,setTime,time,stopwatchrun }) => {
   
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    if (isPlaying && !isResult) {
+    if (isPlaying && !stopwatchrun && !isResult ) {
       intervalRef.current = setInterval(() => {
         setTime((prevTime) => prevTime + 1);
       }, 1000);
@@ -14,7 +14,7 @@ const Stopwatch = ({ isPlaying, isResult,setTime,time }) => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [isPlaying, isResult]);
+  }, [isPlaying, isResult,stopwatchrun]);
 
   useEffect(() => {
     
