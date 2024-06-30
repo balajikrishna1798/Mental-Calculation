@@ -251,14 +251,14 @@ export default function SidebarNav({
                 Number of rows
               </label>
               <select
-                id="numberDigitsTo"
+                id="numberofrows"
                 value={numberofrows}
                 onChange={(e) =>
                   dispatch(setNumberofrows(parseInt(e.target.value)))
                 }
                 className="w-full p-2 bg-white text-black rounded"
               >
-                {Array.from({ length: 40 }, (_, index) => (
+                {Array.from({ length: 6 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     {index + 1}
                   </option>
