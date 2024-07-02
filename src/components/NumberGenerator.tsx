@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
 import DisplayNumbers from "./DisplayNumbers";
@@ -28,54 +28,12 @@ const NumberGenerator = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [inputColors, setInputColors] = useState<string[]>([]);
-  const [spokenRows, setSpokenRows] = useState(new Set());
+  const timeoutId = useRef(null);
 
   const isLastRow = () => currentRow === numberofrows - 1;
 
-  const proceedToNext = async () => {
-    setIsSpeaking(true);
-
-    if (currentRow === -1) {
-      setCurrentRow(0);
-      await speakNumbers(0);
-      setSpokenRows(new Set([0]));
-    } else if (currentRow < numberofrows - 1) {
-      const nextRow = currentRow + 1;
-      if (!spokenRows.has(nextRow)) {
-        await speakNumbers(nextRow);
-        setSpokenRows(new Set(spokenRows).add(nextRow));
-        setTimeout(() => {
-          setCurrentRow(nextRow);
-          setIsSpeaking(false);
-        }, 10000); // 10 seconds delay
-      }
-    } else {
-      setIsSpeaking(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isHandsFree && isPlaying && !isSpeaking) {
-      proceedToNext();
-    }
-  }, [isHandsFree, isPlaying, currentRow, generatedNumbers, language, numberofrows]);
-
-  useEffect(() => {
-    if (isHandsFree && isPlaying && !isLastRow() && !isSpeaking) {
-      const timeout = setTimeout(() => {
-        handleNext();
-      }, 10000); // 10 seconds delay
-      return () => clearTimeout(timeout);
-    }
-  }, [isHandsFree, isPlaying, currentRow, isSpeaking]);
-
-  useEffect(() => {
-    if (generatedNumbers.length !== userAnswers.length) {
-      setUserAnswers(new Array(generatedNumbers.length).fill(""));
-    }
-  }, [generatedNumbers]);
-
   const speakNumbers = async (row) => {
+    setIsSpeaking(true);
     if (mode === 1) {
       await speakText(generatedNumbers[row], language);
     } else {
@@ -83,7 +41,29 @@ const NumberGenerator = ({
         await speakText(generatedNumbers[i][row], language);
       }
     }
+    setIsSpeaking(false);
   };
+
+  const proceedToNext = async () => {
+    const nextRow = currentRow + 1;
+    await speakNumbers(nextRow);
+    setCurrentRow(nextRow);
+  };
+
+  useEffect(() => {
+    if (isHandsFree && isPlaying && !isSpeaking && currentRow < numberofrows) {
+      timeoutId.current = setTimeout(() => {
+        proceedToNext();
+      }, timeOutMs); // 10 seconds delay
+    }
+    return () => clearTimeout(timeoutId.current);
+  }, [isHandsFree, isPlaying, isSpeaking, currentRow, generatedNumbers, language, numberofrows]);
+
+  useEffect(() => {
+    if (generatedNumbers.length !== userAnswers.length) {
+      setUserAnswers(new Array(generatedNumbers.length).fill(""));
+    }
+  }, [generatedNumbers]);
 
   const handleNext = async () => {
     setIsNextDisabled(true);
