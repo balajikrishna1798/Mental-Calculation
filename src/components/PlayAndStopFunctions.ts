@@ -29,13 +29,12 @@ export const checkAnswer = (generatedNumbers, currentRow, userAnswer, handleAnsw
     }
 
     if (userAnswer === correctAnswer) {
-      setTimeout(() => {
         if (modeofoperation === 'Multiplication' || modeofoperation === 'Division') {
           handleNextQuestion();
         } else {
           handleNext();
         }
-      }, 2000);
+      
     }
   } else {
     console.error("Generated number is undefined");

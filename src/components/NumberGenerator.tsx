@@ -28,38 +28,52 @@ const NumberGenerator = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [inputColors, setInputColors] = useState<string[]>([]);
+  const [spokenRows, setSpokenRows] = useState(new Set());
 
-  const isLastRow = () => {
-    return currentRow === numberofrows - 1;
+  const isLastRow = () => currentRow === numberofrows - 1;
+
+  const proceedToNext = async () => {
+    setIsSpeaking(true);
+
+    if (currentRow === -1) {
+      setCurrentRow(0);
+      await speakNumbers(0);
+      setSpokenRows(new Set([0]));
+    } else if (currentRow < numberofrows - 1) {
+      const nextRow = currentRow + 1;
+      if (!spokenRows.has(nextRow)) {
+        await speakNumbers(nextRow);
+        setSpokenRows(new Set(spokenRows).add(nextRow));
+        setTimeout(() => {
+          setCurrentRow(nextRow);
+          setIsSpeaking(false);
+        }, 10000); // 10 seconds delay
+      }
+    } else {
+      setIsSpeaking(false);
+    }
   };
 
   useEffect(() => {
-    const proceedToNext = async () => {
-      if (currentRow === -1) {
-        setCurrentRow(0);
-        await speakNumbers(0);
-      } else if (currentRow < numberofrows - 1) {
-        await speakNumbers(currentRow + 1);
-        setCurrentRow(currentRow + 1);
-      }
-      setIsSpeaking(false);
-    };
-
     if (isHandsFree && isPlaying && !isSpeaking) {
-      setIsSpeaking(true);
       proceedToNext();
     }
   }, [isHandsFree, isPlaying, currentRow, generatedNumbers, language, numberofrows]);
 
   useEffect(() => {
-    let timeout;
-    if (isHandsFree && isPlaying && !isLastRow()) {
-      timeout = setTimeout(() => {
+    if (isHandsFree && isPlaying && !isLastRow() && !isSpeaking) {
+      const timeout = setTimeout(() => {
         handleNext();
-      }, timeOutMs);
+      }, 10000); // 10 seconds delay
+      return () => clearTimeout(timeout);
     }
-    return () => clearTimeout(timeout);
-  }, [isHandsFree, isPlaying, currentRow, timeOutMs]);
+  }, [isHandsFree, isPlaying, currentRow, isSpeaking]);
+
+  useEffect(() => {
+    if (generatedNumbers.length !== userAnswers.length) {
+      setUserAnswers(new Array(generatedNumbers.length).fill(""));
+    }
+  }, [generatedNumbers]);
 
   const speakNumbers = async (row) => {
     if (mode === 1) {
@@ -73,11 +87,9 @@ const NumberGenerator = ({
 
   const handleNext = async () => {
     setIsNextDisabled(true);
-    if (generatedNumbers[currentRow]) {
-      if (currentRow < numberofrows - 1) {
-        setCurrentRow(currentRow + 1);
-        await speakNumbers(currentRow + 1);
-      }
+    if (generatedNumbers[currentRow] && currentRow < numberofrows - 1) {
+      await speakNumbers(currentRow + 1);
+      setCurrentRow(currentRow + 1);
     }
     setIsNextDisabled(false);
   };
@@ -128,12 +140,12 @@ const NumberGenerator = ({
     }
 
     const newInputColors = userAnswers.map((answer, index) =>
-      parseInt(answer) === correctAnswers[index] ? "border-green-500" : "border-red-500"
+      parseInt(answer) === correctAnswers[index] ? "border-2 border-green-500" : "border-2 border-red-500"
     );
 
     setInputColors(newInputColors);
 
-    const isCorrect = newInputColors.every(color => color === "border-green-500");
+    const isCorrect = newInputColors.every(color => color === "border-2 border-green-500");
 
     setIsAnswerCorrect(isCorrect);
     setResult(correctAnswers.map((correctAnswer, index) => `Correct Answer: ${correctAnswer}`));
@@ -174,6 +186,7 @@ const NumberGenerator = ({
                   </button>
                 ) : (
                   <div className="mt-5 flex flex-col gap-5 items-center">
+                    <div className="flex gap-5">
                     {generatedNumbers.map((_, index) => (
                       <input
                         key={index}
@@ -188,11 +201,13 @@ const NumberGenerator = ({
                         placeholder={`Answer ${index + 1}`}
                       />
                     ))}
+                    </div>
                     <button
                       onClick={handleCheckAnswer}
                       className="mt-2 p-2 bg-gray-200 rounded"
+                      disabled={!userAnswers.every(item => typeof item === 'string' && item.trim() !== "")}
                     >
-                      Check Answer
+                      Check Answers
                     </button>
                   </div>
                 )}
@@ -245,7 +260,6 @@ const NumberGenerator = ({
                   <button
                     onClick={handleCheckAnswer}
                     className="p-2 bg-gray-200 rounded"
-                    disabled={userAnswers[0] === ""}
                   >
                     Check Answer
                   </button>
@@ -254,9 +268,10 @@ const NumberGenerator = ({
             </div>
           )}
           {!isHandsFree && isPlaying && modeofoperation === "Addition and Subtraction" && (
-            <div className="mt-5 flex flex-col items-center space-y-4">
+            <div className="mt-5 flex items-center space-y-4">
               {isLastRow() && (
                 <>
+                <div className="flex">
                   {userAnswers.slice(0, mode).map((answer, index) => (
                     <input
                       key={index}
@@ -273,10 +288,11 @@ const NumberGenerator = ({
                       placeholder={`Answer ${index + 1}`}
                     />
                   ))}
+                  </div>
                   <button
                     onClick={handleCheckAnswer}
                     className="p-2 bg-gray-200 rounded"
-                    disabled={userAnswers.slice(0, mode).some((answer) => answer === "")}
+                   disabled={!userAnswers.every(item => typeof item === 'string' && item.trim() !== "")}
                   >
                     Check Answer
                   </button>
@@ -284,7 +300,7 @@ const NumberGenerator = ({
               )}
             </div>
           )}
-          {!isHandsFree && isPlaying && (
+          {!isLastRow() && !isHandsFree && isPlaying && (
             <div className="mt-5 flex justify-center space-x-4">
               <button onClick={handleNext} className="p-2 bg-red-600 rounded" disabled={isNextDisabled}>
                 Next
