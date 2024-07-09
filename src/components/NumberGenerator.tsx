@@ -196,7 +196,7 @@ const NumberGenerator = ({
         </div>
       ) : (
         <div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "3rem" }}>
             {Array.isArray(generatedNumbers) && generatedNumbers.length && generatedNumbers[0].map ? generatedNumbers.map((numbers, windowIndex) => (
               <div key={windowIndex}>
                 {numbers.slice(currentRow, currentRow + 1).map((num, index) => (
@@ -224,62 +224,55 @@ const NumberGenerator = ({
               </div>
             )}
           </div>
-          {!isHandsFree && isPlaying && modeofoperation === "Addition" && (
+
+          {!isHandsFree && isPlaying && modeofoperation === "Addition" && mode === 1 && isLastRow() && (
             <div className="mt-5 flex flex-col items-center space-y-4">
-              {isLastRow() && (
-                <>
+              <input
+                type="text"
+                value={userAnswers[0]}
+                onChange={(e) =>
+                  setUserAnswers([e.target.value])
+                }
+                className={`p-2 border rounded ${inputColors[0] || ""}`}
+                placeholder="Answer"
+              />
+              <button
+                onClick={handleCheckAnswer}
+                className="p-2 bg-gray-200 rounded"
+              >
+                Check Answer
+              </button>
+            </div>
+          )}
+
+          {!isHandsFree && isPlaying && modeofoperation === "Addition" && mode > 1 && isLastRow() && (
+            <div className="mt-5 flex flex-col gap-5 items-center">
+              <div className="flex gap-5">
+                {generatedNumbers.map((_, index) => (
                   <input
+                    key={index}
                     type="text"
-                    value={userAnswers[0]}
-                    onChange={(e) =>
-                      setUserAnswers([e.target.value])
-                    }
-                    className={`p-2 border rounded ${inputColors[0] || ""}`}
-                    placeholder="Answer"
+                    value={userAnswers[index]}
+                    onChange={(e) => {
+                      const newAnswers = [...userAnswers];
+                      newAnswers[index] = e.target.value;
+                      setUserAnswers(newAnswers);
+                    }}
+                    className={`p-2 border rounded ${inputColors[index] || ""}`}
+                    placeholder={`Answer ${index + 1}`}
                   />
-                  <button
-                    onClick={handleCheckAnswer}
-                    className="p-2 bg-gray-200 rounded"
-                  >
-                    Check Answer
-                  </button>
-                </>
-              )}
+                ))}
+              </div>
+              <button
+                onClick={handleCheckAnswer}
+                className="mt-2 p-2 bg-gray-200 rounded"
+                disabled={!userAnswers.every(item => typeof item === 'string' && item.trim() !== "")}
+              >
+                Check Answers
+              </button>
             </div>
           )}
-          {!isHandsFree && isPlaying && modeofoperation === "Addition and Subtraction" && (
-            <div className="mt-5 flex items-center space-y-4">
-              {isLastRow() && (
-                <>
-                <div className="flex">
-                  {userAnswers.slice(0, mode).map((answer, index) => (
-                    <input
-                      key={index}
-                      type="text"
-                      value={answer}
-                      onChange={(e) =>
-                        setUserAnswers((prev) => {
-                          const newAnswers = [...prev];
-                          newAnswers[index] = e.target.value;
-                          return newAnswers;
-                        })
-                      }
-                      className={`p-2 border rounded ${inputColors[index] || ""}`}
-                      placeholder={`Answer ${index + 1}`}
-                    />
-                  ))}
-                  </div>
-                  <button
-                    onClick={handleCheckAnswer}
-                    className="p-2 bg-gray-200 rounded"
-                   disabled={!userAnswers.every(item => typeof item === 'string' && item.trim() !== "")}
-                  >
-                    Check Answer
-                  </button>
-                </>
-              )}
-            </div>
-          )}
+
           {!isLastRow() && !isHandsFree && isPlaying && (
             <div className="mt-5 flex justify-center space-x-4">
               <button onClick={handleNext} className="p-2 bg-red-600 rounded" disabled={isNextDisabled}>

@@ -1,3 +1,4 @@
+// File path: pages/index.tsx
 "use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -7,7 +8,7 @@ import SidebarNav from "@/components/SidebarNav";
 import { speakText } from "../utils/speech";
 import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/store";
-import { setMode, setNumbers } from "@/features/MentalSlice";
+import { setNumbers } from "@/features/MentalSlice";
 
 export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);

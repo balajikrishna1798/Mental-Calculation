@@ -1,7 +1,8 @@
+
+// Footer Component
 import React, { useEffect } from "react";
 import { useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
-import Stopwatch from "./Stopwatch";
 
 const Footer = ({
   togglePopup,
@@ -20,17 +21,17 @@ const Footer = ({
   setStopWatchRun,
   setUserAnswers
 }) => {
-  const { modeofoperation, language, mode,isHandsFree } = useAppSelector((state) => state.mental);
+  const { modeofoperation, language, mode, isHandsFree } = useAppSelector((state) => state.mental);
 
   useEffect(() => {
     if (isPlaying) {
       setShowResult(false);
-      setResult(null);   
+      setResult(null);
     }
   }, [isPlaying, setShowResult, setResult]);
 
   const handleResult = async () => {
-    setIsPlaying(false)
+    setIsPlaying(false);
     setIsResult(true);
     const results = [];
     const operations = [];
@@ -46,10 +47,19 @@ const Footer = ({
         operations.push(resultString.replace(/-/g, " minus "));
       }
     } else if (modeofoperation === "Addition") {
-      const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
-      const resultString = `Result: ${additionResult}`;
-      results.push(resultString);
-      operations.push(resultString);
+      if (mode === 1) {
+        const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
+        const resultString = `Result: ${additionResult}`;
+        results.push(resultString);
+        operations.push(resultString);
+      } else {
+        for (let i = 0; i < mode; i++) {
+          const additionResult = generatedNumbers[i].reduce((acc, num) => acc + parseInt(num), 0);
+          const resultString = `Window ${i + 1} Result: ${additionResult}`;
+          results.push(resultString);
+          operations.push(resultString);
+        }
+      }
     } else if (modeofoperation === "Multiplication" || modeofoperation === "Division") {
       for (let i = 0; i < generatedNumbers.length; i++) {
         const number = generatedNumbers[i];
