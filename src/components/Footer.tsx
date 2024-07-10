@@ -1,5 +1,3 @@
-
-// Footer Component
 import React, { useEffect } from "react";
 import { useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
@@ -46,7 +44,7 @@ const Footer = ({
         results.push(resultString);
         operations.push(resultString.replace(/-/g, " minus "));
       }
-    } else if (modeofoperation === "Addition") {
+    } else if (modeofoperation === "Addition" || modeofoperation === "Addition and Subtraction") {
       if (mode === 1) {
         const additionResult = generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0);
         const resultString = `Result: ${additionResult}`;

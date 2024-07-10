@@ -17,7 +17,7 @@ export const speakText = (text: string, language: string = "en"): Promise<void> 
       utterance = new SpeechSynthesisUtterance(norwegianText);
       utterance.lang = "no-NO";
     } else {
-      const textString = text.toString(); // Ensure text is a string
+      const textString =text !== undefined ? text.toString() : ""; // Ensure text is a string
     const operationText = textString
       .replace(/\*/g, " multiplied by ")
       .replace(/\//g, " divided by ")

@@ -45,9 +45,11 @@ const NumberGenerator = ({
   };
 
   const proceedToNext = async () => {
-    const nextRow = currentRow + 1;
-    await speakNumbers(nextRow);
-    setCurrentRow(nextRow);
+    if (!isLastRow()) {
+      const nextRow = currentRow + 1;
+      await speakNumbers(nextRow);
+      setCurrentRow(nextRow);
+    }
   };
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const NumberGenerator = ({
           const result = firstNumber / secondNumber;
           return result;
         });
-      } else if (modeofoperation === "Addition") {
+      } else if (modeofoperation === "Addition" || modeofoperation === "Addition and Subtraction") {
         correctAnswers = [generatedNumbers.reduce((acc, num) => acc + parseInt(num), 0)];
       }
     } else {
@@ -225,7 +227,7 @@ const NumberGenerator = ({
             )}
           </div>
 
-          {!isHandsFree && isPlaying && modeofoperation === "Addition" && mode === 1 && isLastRow() && (
+          {!isHandsFree && isPlaying && (modeofoperation === "Addition" || modeofoperation === "Addition and Subtraction") && isLastRow() && mode === 1 && (
             <div className="mt-5 flex flex-col items-center space-y-4">
               <input
                 type="text"
