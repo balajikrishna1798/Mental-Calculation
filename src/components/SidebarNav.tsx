@@ -258,7 +258,7 @@ export default function SidebarNav({
                 }
                 className="w-full p-2 bg-white text-black rounded"
               >
-                {Array.from({ length: 6 }, (_, index) => (
+                {Array.from({ length: 50 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     {index + 1}
                   </option>
