@@ -198,7 +198,7 @@ const NumberGenerator = ({
         </div>
       ) : (
         <div>
-          <div style={{ display: "flex", justifyContent: "center", gap: "3rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
             {Array.isArray(generatedNumbers) && generatedNumbers.length && generatedNumbers[0].map ? generatedNumbers.map((numbers, windowIndex) => (
               <div key={windowIndex}>
                 {numbers.slice(currentRow, currentRow + 1).map((num, index) => (
