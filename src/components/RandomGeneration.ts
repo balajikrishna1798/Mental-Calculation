@@ -87,7 +87,7 @@ export const generateNumbers = () => {
       } else {
         // For subsequent numbers, randomly decide if the number is positive or negative
         let number = generateRandomNumber(minDigit, maxDigit);
-        if (Math.random() < 0.5 && negativeCount < numberofrows / 2) {
+        if (Math.random() < 0.5 && negativeCount < numberofrows / 2 && number <= sum) {
           number = -number;
           negativeCount++;
         } else {
@@ -116,6 +116,7 @@ export const generateNumbers = () => {
 
   return numbers;
 };
+
 export const generateMultipleNumbers = (mode) => {
   if (mode === 2) {
       return [generateNumbers(), generateNumbers()];
