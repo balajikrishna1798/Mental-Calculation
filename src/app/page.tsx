@@ -1,4 +1,3 @@
-// File path: pages/index.tsx
 "use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -66,10 +65,15 @@ export default function Home() {
         <NumberGenerator
           result={result}
           setResult={setResult}
+          showResult = {showResult}
           setShowResult={setShowResult}
           currentRow={currentRow}
           setCurrentRow={setCurrentRow}
-          generatedNumbers={useAppSelector((state) => state.mental.mode === 1 ? state.mental.numbers : state.mental.multiNumbers.slice(0, state.mental.mode))}
+          generatedNumbers={useAppSelector((state) =>
+            state.mental.mode === 1
+              ? state.mental.numbers
+              : state.mental.multiNumbers.slice(0, state.mental.mode)
+          )}
           isPlaying={isPlaying}
           isResult={isResult}
           setTime={setTime}
@@ -83,7 +87,11 @@ export default function Home() {
         />
         <Footer
           togglePopup={togglePopup}
-          generatedNumbers={useAppSelector((state) => state.mental.mode === 1 ? state.mental.numbers : state.mental.multiNumbers.slice(0, state.mental.mode))}
+          generatedNumbers={useAppSelector((state) =>
+            state.mental.mode === 1
+              ? state.mental.numbers
+              : state.mental.multiNumbers.slice(0, state.mental.mode)
+          )}
           result={result}
           setResult={setResult}
           speakOrStop={speakOrStop}

@@ -5,7 +5,7 @@ export const generateRandomNumber = (min, max) => {
   let number;
   do {
     number = Math.floor(Math.random() * (max - min + 1)) + min;
-  } while (number === 0); // Ensure the number is non-zero
+  } while (number === 0);
   return number;
 };
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setHandsFree,
@@ -20,66 +20,46 @@ export default function SidebarNav({
   handleClose: () => void;
   isOpen: boolean;
 }) {
-  const isHandsFree = useSelector((state: RootState) => state.mental.isHandsFree);
   const dispatch = useDispatch();
-  const timeOutMs = useSelector((state: RootState) => state.mental.timeOutMs);
+  const {
+    isHandsFree,
+    timeOutMs,
+    modeofoperation,
+    language,
+    mode: multiWindow,
+    numberofrows,
+    numberofdigitsfrom,
+    numberofdigitsto,
+    isMultiwindow,
+  } = useSelector((state: RootState) => state.mental);
 
-  const modeofoperation = useSelector(
-    (state: RootState) => state.mental.modeofoperation
-  );
-
-  const language = useSelector((state: RootState) => state.mental.language);
-  const multiWindow = useSelector(
-    (state: RootState) => state.mental.mode
-  );
-
-  const numberofrows = useSelector(
-    (state: RootState) => state.mental.numberofrows
-  );
-
-  const numberofdigitsfrom = useSelector(
-    (state: RootState) => state.mental.numberofdigitsfrom
-  );
-
-  const numberofdigitsto = useSelector(
-    (state: RootState) => state.mental.numberofdigitsto
-  );
-  const isMultiWindow = useSelector(
-    (state: RootState) => state.mental.isMultiwindow
-  );
-  const modeOfOperationChange = (e) => {
-    dispatch(setModeofOperation(e.target.value));
-    dispatch(setNumberofrows(2));
-  };
-  const handleDigitsFromChange = (e) => {
+  const handleDigitsFromChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = parseInt(e.target.value);
     dispatch(setNumberofdigitsfrom(newValue));
-
     if (numberofdigitsto < newValue) {
       dispatch(setNumberofdigitsto(newValue));
     }
   };
 
-  const handleDigitsToChange = (e) => {
+  const handleDigitsToChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = parseInt(e.target.value);
-    dispatch(setNumberofdigitsto(parseInt(e.target.value)));
+    dispatch(setNumberofdigitsto(newValue));
     if (numberofdigitsto > newValue) {
       dispatch(setNumberofdigitsfrom(newValue));
     }
   };
 
-  const handleSetIsMultiWindow = async (e) => {
-    
-    await dispatch(setIsMultiWindow(e.target.checked));
-    if(!isMultiWindow){
-    dispatch(setMultiwindow(2))
-    }
-    else{
-      dispatch(setMultiwindow(1))
+  const handleSetisMultiwindow = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setIsMultiWindow(e.target.checked));
+    if (!isMultiwindow) {
+      dispatch(setMultiwindow(2));
+      dispatch(setModeofOperation("Addition and Subtraction"));
+    } else {
+      dispatch(setMultiwindow(1));
     }
   };
 
-  const handlehandsFree = (e) => {
+  const handleHandsFree = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setHandsFree(e.target.checked));
   };
 
@@ -90,100 +70,93 @@ export default function SidebarNav({
     setTimeout(() => {
       handleClose();
       setIsClosing(false);
-    }, 300); 
+    }, 300);
   };
+
   return (
     <div
-    className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ${
-      isOpen && !isClosing ? "slide_from_left" : "slide_from_right"
-    } bg-gray-800 overflow-y-auto`}
-  >
-      {isOpen && (
-        <div className="w-80 p-5 text-white">
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-xl font-bold">Settings</h2>
-            <button onClick={closeSidebar} className="text-2xl">
-              ×
-            </button>
-          </div>
+      className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ${
+        isOpen && !isClosing ? "slide_from_left":"slide_from_right" } bg-gray-900 text-white overflow-y-auto`}
+    >
+      <div className="w-80 p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-semibold">Settings</h2>
+          <button onClick={closeSidebar} className="text-3xl">
+            ×
+          </button>
+        </div>
 
-          <div>
-            <h3 className="text-lg mb-2">Mode of Operation</h3>
-            <select
-              value={modeofoperation}
-              onChange={(e) => modeOfOperationChange(e)}
-              className="w-full p-2 bg-white text-black rounded"
-              id="modeofoperation"
-            >
-              <option value="Addition">Addition</option>
-              <option value="Subtraction">Subtraction</option>
-              <option value="Multiplication" disabled={isMultiWindow}>
-                Multiplication
-              </option>
-              <option value="Division" disabled={isMultiWindow}>
-                Division
-              </option>
-              <option value="Addition and Subtraction" disabled={isMultiWindow}>
-                Addition and Subtraction
-              </option>
-            </select>
-          </div>
+        <div>
+          <h3 className="text-lg font-medium mb-2">Mode of Operation</h3>
+          <select
+            value={modeofoperation}
+            onChange={(e) => dispatch(setModeofOperation(e.target.value))}
+            className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500"
+          >
+            <option value="Addition">Addition</option>
+            <option value="Subtraction" disabled={isMultiwindow}>Subtraction</option>
+            <option value="Multiplication" disabled={isMultiwindow}>
+              Multiplication
+            </option>
+            <option value="Division" disabled={isMultiwindow}>
+              Division
+            </option>
+            <option value="Addition and Subtraction">
+              Addition and Subtraction
+            </option>
+          </select>
+        </div>
 
-          <label className="flex items-center gap-3 mt-4 cursor-pointer">
+        <div className="mt-4">
+          <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={isHandsFree}
-              onChange={(e) => handlehandsFree(e)}
-              className="h-5 w-5 cursor-pointer"
+              onChange={handleHandsFree}
+              className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer rounded"
             />
-            Enable Handsfree
+            <span className="text-base">Enable Handsfree</span>
           </label>
 
           <label className="flex items-center gap-3 mt-4 cursor-pointer">
             <input
               type="checkbox"
-              checked={isMultiWindow}
-              onChange={(e) => handleSetIsMultiWindow(e)}
-              className="h-5 w-5 cursor-pointer"
+              checked={isMultiwindow}
+              onChange={handleSetisMultiwindow}
+              className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer rounded"
             />
-            Enable Multi-Window
+            <span className="text-base">Enable Multi-Window</span>
           </label>
 
-          {isMultiWindow && (
-            <Fragment>
-              <label htmlFor="numberofwindows" className="block my-2">
+          {isMultiwindow && (
+            <div className="mt-4">
+              <label htmlFor="numberofwindows" className="block mb-2 text-base">
                 Number of Windows
               </label>
               <select
                 id="numberofwindows"
                 value={multiWindow}
-                onChange={(e) =>
-                  dispatch(setMultiwindow(parseInt(e.target.value)))
-                }
-                className="w-full p-2 bg-white text-black rounded mb-3"
+                onChange={(e) => dispatch(setMultiwindow(parseInt(e.target.value)))}
+                className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               >
                 <option value="2">2</option>
                 <option value="3">3</option>
               </select>
-            </Fragment>
+            </div>
           )}
 
           <div className="mt-4">
-            <h3 className="text-lg mb-2">Number</h3>
-
-            {modeofoperation == "Multiplication" ||
-            modeofoperation == "Division" ? (
+            <h3 className="text-lg font-medium mb-2">Number</h3>
+            {["Multiplication", "Division"].includes(modeofoperation) ? (
               <div>
-                <label htmlFor="firstDigit" className="block mb-1">
+                <label htmlFor="firstDigit" className="block mb-2 text-base">
                   First Number
                 </label>
                 <select
                   id="firstDigit"
                   value={numberofdigitsfrom}
-                  onChange={(e) =>
-                    dispatch(setNumberofdigitsfrom(parseInt(e.target.value)))
-                  }
-                  className="w-full p-2 bg-white text-black rounded mb-3"
+                  onChange={(e) => dispatch(setNumberofdigitsfrom(parseInt(e.target.value)))}
+                  className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
                   {Array.from({ length: 5 }, (_, index) => (
                     <option key={index + 1} value={index + 1}>
@@ -192,34 +165,32 @@ export default function SidebarNav({
                   ))}
                 </select>
 
-                <label htmlFor="secondNumber" className="block mb-1">
+                <label htmlFor="secondNumber" className="block mb-2 text-base">
                   Second Number
                 </label>
                 <select
                   id="secondNumber"
                   value={numberofdigitsto}
-                  onChange={(e) =>
-                    dispatch(setNumberofdigitsto(parseInt(e.target.value)))
-                  }
-                  className="w-full p-2 bg-white text-black rounded mb-3"
+                  onChange={(e) => dispatch(setNumberofdigitsto(parseInt(e.target.value)))}
+                  className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  ))}
                 </select>
               </div>
             ) : (
               <div>
-                <label htmlFor="numberDigitsFrom" className="block mb-1">
+                <label htmlFor="numberDigitsFrom" className="block mb-2 text-base">
                   Number of digits from
                 </label>
                 <select
                   id="numberDigitsFrom"
                   value={numberofdigitsfrom}
                   onChange={handleDigitsFromChange}
-                  className="w-full p-2 bg-white text-black rounded mb-3"
+                  className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
                   {Array.from({ length: 5 }, (_, index) => (
                     <option key={index + 1} value={index + 1}>
@@ -228,14 +199,14 @@ export default function SidebarNav({
                   ))}
                 </select>
 
-                <label htmlFor="numberDigitsTo" className="block mb-1">
+                <label htmlFor="numberDigitsTo" className="block mb-2 text-base">
                   Number of digits to
                 </label>
                 <select
                   id="numberDigitsTo"
                   value={numberofdigitsto}
                   onChange={handleDigitsToChange}
-                  className="w-full p-2 bg-white text-black rounded mb-3"
+                  className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
                   {Array.from({ length: 5 }, (_, index) => (
                     <option key={index + 1} value={index + 1}>
@@ -246,19 +217,17 @@ export default function SidebarNav({
               </div>
             )}
 
-            <div>
-              <label htmlFor="numberRows" className="block mb-1">
+            <div className="mt-4">
+              <label htmlFor="numberRows" className="block mb-2 text-base">
                 Number of rows
               </label>
               <select
                 id="numberofrows"
                 value={numberofrows}
-                onChange={(e) =>
-                  dispatch(setNumberofrows(parseInt(e.target.value)))
-                }
-                className="w-full p-2 bg-white text-black rounded"
+                onChange={(e) => dispatch(setNumberofrows(parseInt(e.target.value)))}
+                className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               >
-                {Array.from({ length: 50 }, (_, index) => (
+                {Array.from({ length: 6 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     {index + 1}
                   </option>
@@ -267,50 +236,45 @@ export default function SidebarNav({
             </div>
           </div>
 
-          {/* Time Settings */}
           <div className="mt-4">
-            <h3 className="text-lg mb-2">Time</h3>
+            <h3 className="text-lg font-medium mb-2">Time</h3>
             <div>
-              <label htmlFor="flashMs" className="block mb-1">
+              <label htmlFor="flashMs" className="block mb-2 text-base">
                 Flash (ms)
               </label>
               <input
                 id="flashMs"
                 type="number"
                 value={timeOutMs}
-                onChange={(e) =>
-                  dispatch(setTimeOutMs(parseInt(e.target.value)))
-                }
-                className="w-full p-2 bg-white text-black rounded mb-3"
+                onChange={(e) => dispatch(setTimeOutMs(parseInt(e.target.value)))}
+                className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               />
             </div>
           </div>
 
-          {/* Text To Speech */}
           <div className="mt-4">
-            <h3 className="text-lg mb-2">Text To Speech</h3>
+            <h3 className="text-lg font-medium mb-2">Text To Speech</h3>
             <select
               id="voiceLanguage"
               value={language}
               onChange={(e) => dispatch(setLanguage(e.target.value))}
-              className="w-full p-2 bg-white text-black rounded"
+              className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500"
             >
               <option value="en-US">English (US)</option>
-              <option value="nb-NO">Norwegian (N0)</option>
+              <option value="nb-NO">Norwegian (NO)</option>
             </select>
           </div>
 
-          {/* Close button */}
           <div className="mt-5 text-right">
             <button
               onClick={handleClose}
-              className="px-4 py-2 bg-red-500 hover:bg-red-700 text-white rounded"
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded transition-all duration-200 ease-in-out"
             >
               Close
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
