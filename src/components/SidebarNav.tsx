@@ -227,7 +227,7 @@ export default function SidebarNav({
                 onChange={(e) => dispatch(setNumberofrows(parseInt(e.target.value)))}
                 className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               >
-                {Array.from({ length: 6 }, (_, index) => (
+                {Array.from({ length: 50 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     {index + 1}
                   </option>
