@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
 import DisplayNumbers from "./DisplayNumbers";
 import Stopwatch from "./Stopwatch";
+import { setInputColors } from "@/features/MentalSlice";
 
 const NumberGenerator = ({
   result,
@@ -30,11 +31,13 @@ const NumberGenerator = ({
     mode,
     numberofrows,
     timeOutMs,
+    inputColors
   } = useAppSelector((state) => state.mental);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
-  const [inputColors, setInputColors] = useState<string[]>([]);
   const timeoutId = useRef(null);
+  const dispatch = useAppDispatch()
+console.log(inputColors,"in");
 
   const isLastRow = () => currentRow === numberofrows - 1;
 
@@ -149,7 +152,7 @@ const NumberGenerator = ({
         : "border-2 border-red-500"
     );
 
-    setInputColors(newInputColors);
+    dispatch(setInputColors(newInputColors));
 
     const isCorrect = newInputColors.every(
       (color) => color === "border-2 border-green-500"
@@ -344,7 +347,7 @@ const NumberGenerator = ({
                   </div>
                   <button
                     onClick={handleCheckAnswer}
-                    className="mt-2 p-2 bg-gray-700 rounded hover:bg-gray-600"
+                    className="mt-2 p-2 text-white bg-green-700 rounded hover:bg-green-600"
                     disabled={
                       !userAnswers.every(
                         (item) => typeof item === "string" && item.trim() !== ""
