@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { speakText } from "../utils/speech";
+import { setInputColors } from "@/features/MentalSlice";
 
 const Footer = ({
   togglePopup,
@@ -29,7 +30,7 @@ const Footer = ({
       setResult(null);
     }
   }, [isPlaying, setShowResult, setResult]);
-
+const dispatch = useAppDispatch()
   const handleResult = async () => {
     setIsPlaying(false);
     setIsResult(true);
@@ -140,6 +141,7 @@ const Footer = ({
                 setTime(0);
                 setStopWatchRun(false);
                 setUserAnswers(["", "", ""]);
+                dispatch(setInputColors([]))
               }}
               className="text-white px-10 py-2 rounded-full font-bold play-button"
             >
