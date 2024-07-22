@@ -4,6 +4,7 @@ const initialState = {
     modeofoperation: "Addition",
     numberofdigitsfrom: 1,
     numberofdigitsto: 1,
+    inputColors:[],
     numberofrows: 3,
     isMultiwindow: false,
     timeOutMs: 500,
@@ -22,6 +23,9 @@ const mentalSlice = createSlice({
     reducers: {
         setHandsFree: (state, action) => {
             state.isHandsFree = action.payload;
+        },
+        setInputColors: (state, action) => {
+            state.inputColors = action.payload;
         },
         setMultiwindow: (state, action) => {
             state.mode = action.payload;
@@ -70,6 +74,6 @@ const mentalSlice = createSlice({
 export const {
     setMode, setMultiwindow, setResult, setHandsFree, setLanguage,
     setIsMultiWindow, setTimeOutMs, setNumbers, setNumberofdigitsto,
-    setModeofOperation, setNumberofdigitsfrom, setNumberofrows
+    setModeofOperation,setInputColors, setNumberofdigitsfrom, setNumberofrows
 } = mentalSlice.actions;
 export default mentalSlice.reducer;
