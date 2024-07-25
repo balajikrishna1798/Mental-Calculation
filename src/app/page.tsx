@@ -60,7 +60,7 @@ export default function Home() {
       <Header />
       <div className="backgroundImageClass">
         {isPopupOpen && (
-          <SidebarNav handleClose={handleClosePopup} isOpen={isPopupOpen} />
+          <SidebarNav handleClose={handleClosePopup} isOpen={isPopupOpen} setIsPlaying={setIsPlaying} setTime = {setTime}/>
         )}
         <NumberGenerator
           result={result}
