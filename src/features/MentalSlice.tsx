@@ -68,12 +68,16 @@ const mentalSlice = createSlice({
                 state.multiResults = action.payload;
             }
         },
+        resetSettings: (state) => {
+            state.numbers = []
+            state.inputColors = []
+        }
     },
 });
 
 export const {
     setMode, setMultiwindow, setResult, setHandsFree, setLanguage,
     setIsMultiWindow, setTimeOutMs, setNumbers, setNumberofdigitsto,
-    setModeofOperation,setInputColors, setNumberofdigitsfrom, setNumberofrows
+    setModeofOperation,setInputColors, setNumberofdigitsfrom, setNumberofrows,resetSettings
 } = mentalSlice.actions;
 export default mentalSlice.reducer;
