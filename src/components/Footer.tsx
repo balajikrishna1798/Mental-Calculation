@@ -112,8 +112,8 @@ const dispatch = useAppDispatch()
   };
 
   return (
-    <footer className="fixed w-full bottom-0 py-5 flex flex-row justify-center items-center shadow-2xl">
-      <div className="w-full bottom-0 py-5 flex flex-row justify-center items-center min_footer">
+    <footer className="w-full py-5 flex flex-row justify-center items-center">
+      <div className="w-full py-5 flex flex-row justify-center items-center min_footer">
         <div className="flex flex-row justify-center items-center bg-black bg-opacity-30 rounded-lg lg:p-5 min_footer">
           <button
             onClick={togglePopup}
