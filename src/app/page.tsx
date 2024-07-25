@@ -34,6 +34,8 @@ export default function Home() {
   };
 
   const speakOrStop = () => {
+    window.speechSynthesis.cancel();
+
     setIsPlaying(true);
     setShowResult(false);
     setIsResult(false);
