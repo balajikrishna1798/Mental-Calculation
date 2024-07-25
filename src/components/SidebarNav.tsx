@@ -10,15 +10,20 @@ import {
   setNumberofdigitsto,
   setNumberofrows,
   setTimeOutMs,
+  resetSettings,
 } from "@/features/MentalSlice";
 import { RootState } from "@/store/store";
 
 export default function SidebarNav({
   handleClose,
   isOpen,
+  setIsPlaying,
+  setTime
 }: {
   handleClose: () => void;
   isOpen: boolean;
+  setIsPlaying,
+  setTime
 }) {
   const dispatch = useDispatch();
   const {
@@ -33,34 +38,41 @@ export default function SidebarNav({
     isMultiwindow,
   } = useSelector((state: RootState) => state.mental);
 
+  const handleSettingChange = (changeAction) => {
+    dispatch(resetSettings());
+    dispatch(changeAction);
+    setIsPlaying(false);
+    setTime(0);
+  };
+
   const handleDigitsFromChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = parseInt(e.target.value);
-    dispatch(setNumberofdigitsfrom(newValue));
+    handleSettingChange(setNumberofdigitsfrom(newValue));
     if (numberofdigitsto < newValue) {
-      dispatch(setNumberofdigitsto(newValue));
+      handleSettingChange(setNumberofdigitsto(newValue));
     }
   };
 
   const handleDigitsToChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = parseInt(e.target.value);
-    dispatch(setNumberofdigitsto(newValue));
+    handleSettingChange(setNumberofdigitsto(newValue));
     if (numberofdigitsto > newValue) {
-      dispatch(setNumberofdigitsfrom(newValue));
+      handleSettingChange(setNumberofdigitsfrom(newValue));
     }
   };
 
   const handleSetisMultiwindow = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setIsMultiWindow(e.target.checked));
+    handleSettingChange(setIsMultiWindow(e.target.checked));
     if (!isMultiwindow) {
-      dispatch(setMultiwindow(2));
-      dispatch(setModeofOperation("Addition and Subtraction"));
+      handleSettingChange(setMultiwindow(2));
+      handleSettingChange(setModeofOperation("Addition and Subtraction"));
     } else {
-      dispatch(setMultiwindow(1));
+      handleSettingChange(setMultiwindow(1));
     }
   };
 
   const handleHandsFree = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setHandsFree(e.target.checked));
+    handleSettingChange(setHandsFree(e.target.checked));
   };
 
   const [isClosing, setIsClosing] = useState(false);
@@ -90,7 +102,7 @@ export default function SidebarNav({
           <h3 className="text-lg font-medium mb-2">Mode of Operation</h3>
           <select
             value={modeofoperation}
-            onChange={(e) => dispatch(setModeofOperation(e.target.value))}
+            onChange={(e) => handleSettingChange(setModeofOperation(e.target.value))}
             className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500"
           >
             <option value="Addition">Addition</option>
@@ -136,7 +148,7 @@ export default function SidebarNav({
               <select
                 id="numberofwindows"
                 value={multiWindow}
-                onChange={(e) => dispatch(setMultiwindow(parseInt(e.target.value)))}
+                onChange={(e) => handleSettingChange(setMultiwindow(parseInt(e.target.value)))}
                 className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               >
                 <option value="2">2</option>
@@ -155,7 +167,7 @@ export default function SidebarNav({
                 <select
                   id="firstDigit"
                   value={numberofdigitsfrom}
-                  onChange={(e) => dispatch(setNumberofdigitsfrom(parseInt(e.target.value)))}
+                  onChange={(e) => handleSettingChange(setNumberofdigitsfrom(parseInt(e.target.value)))}
                   className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
                   {Array.from({ length: 5 }, (_, index) => (
@@ -171,7 +183,7 @@ export default function SidebarNav({
                 <select
                   id="secondNumber"
                   value={numberofdigitsto}
-                  onChange={(e) => dispatch(setNumberofdigitsto(parseInt(e.target.value)))}
+                  onChange={(e) => handleSettingChange(setNumberofdigitsto(parseInt(e.target.value)))}
                   className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
                 >
                   {Array.from({ length: 5 }, (_, index) => (
@@ -224,10 +236,10 @@ export default function SidebarNav({
               <select
                 id="numberofrows"
                 value={numberofrows}
-                onChange={(e) => dispatch(setNumberofrows(parseInt(e.target.value)))}
+                onChange={(e) => handleSettingChange(setNumberofrows(parseInt(e.target.value)))}
                 className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               >
-                {Array.from({ length: 50 }, (_, index) => (
+                {Array.from({ length: 45 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     {index + 1}
                   </option>
@@ -246,7 +258,7 @@ export default function SidebarNav({
                 id="flashMs"
                 type="number"
                 value={timeOutMs}
-                onChange={(e) => dispatch(setTimeOutMs(parseInt(e.target.value)))}
+                onChange={(e) => handleSettingChange(setTimeOutMs(parseInt(e.target.value)))}
                 className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500 cursor-pointer"
               />
             </div>
@@ -257,7 +269,7 @@ export default function SidebarNav({
             <select
               id="voiceLanguage"
               value={language}
-              onChange={(e) => dispatch(setLanguage(e.target.value))}
+              onChange={(e) => handleSettingChange(setLanguage(e.target.value))}
               className="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring focus:ring-blue-500"
             >
               <option value="en-US">English (US)</option>
