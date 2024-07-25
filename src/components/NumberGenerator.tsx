@@ -169,7 +169,7 @@ console.log(inputColors,"in");
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center" style={{minHeight:"calc(100vh - 160px)"}}>
       <Stopwatch
         isPlaying={isPlaying}
         isResult={isResult}
@@ -211,7 +211,7 @@ console.log(inputColors,"in");
                     </button>
                   ) : (
                     <div className="mt-5 flex flex-col gap-5 items-center">
-                      <div className="flex gap-5">
+                      <div className="flex flex-wrap px-5 gap-5">
                         {generatedNumbers.map((_, index) => (
                           <div key={index} className="flex flex-col items-center">
                             <input
